@@ -1,45 +1,56 @@
-- hosts: jenkinsServer
+---
+- hosts: 10.0.0.156
   become: true
   gather_facts: no
   tasks:
-  - name: Download Long Term Jenkins release
-    get_url:
-      url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
-      dest: /etc/yum.repos.d/jenkins.repo
+  - name: Download long term jenkins release
+    get_url: 
+     url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+     dest: /etc/yum.repos.d/jenkins.repo
+
   - name: Import jenkins key from url
     rpm_key:
-      state: present
-      key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+     key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+     state: present
+
   - name: Install java
     yum:
-      name: java-11-openjdk-devel
-      state: present
-  - name: Install Epel Relaase which has daemonize  dependency which is required for Jenkins.
+     name: java-11-openjdk-devel
+     state: present
+
+  - name: Install epel release package for extra pacakages
     yum:
-      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-      state: present
-      disable_gpg_check: true
+     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+     state: present
+     disable_gpg_check: true
+
   - name: Install jenkins
-    yum:
-      name: jenkins
-      state: latest
-      skip_broken: yes
-  - name: Start Jenkins
+    yum: 
+     name: jenkins
+     state: latest
+     skip_broken: yes
+
+  - name: start jenkins
     service:
-      name: jenkins
-      state: started
-  - name: enable jenkins
+     name: jenkins
+     state: started
+
+  - name: enbale jenkins
     systemd:
      name: jenkins
      enabled: true
-  - name: sleep for 30 seconds and continue with play
+
+  - name: sleep for 30 seconds and continue to play
     wait_for:
      delay: 30
      port: 8080
-  - name: init password jenkin
+
+  - name: init password jenkins
     shell: cat /var/lib/jenkins/secrets/initialAdminPassword
     changed_when: false
     register: result
-  - name: print init password jenkins
+
+  - name: print jenkins password
     debug:
      var: result.stdout
+...
