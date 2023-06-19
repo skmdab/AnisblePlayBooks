@@ -1,5 +1,6 @@
 - hosts: jenkinsServer
-  become: yes
+  become: true
+  gather_facts: no
   tasks:
   - name: Download Long Term Jenkins release
     get_url:
